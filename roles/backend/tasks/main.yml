@@ -1,0 +1,33 @@
+---
+- name: Install packages and dependencies
+  vars:
+    packages:
+      - npm
+      - tar
+      - unzip
+  block:
+    - name: Install Node.js
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        update_cache: yes
+      loop: "{{ packages }}"
+      when: ansible_os_family == 'Debian'
+
+- name: Copying files to destination server
+  block:
+    - name: Copying compressed backend files to server
+      ansible.builtin.copy:
+        src: files/backend.zip
+        dest: /var/www/html/
+        mode: '0755'
+
+    - name: Unarchive backend files
+      ansible.builtin.unarchive:
+        src: /var/www/html/backend.zip
+        dest: /var/www/html/
+        remote_src: yes
+
+- name: Start backend
+  ansible.builtin.shell: cd /var/www/html/; ./start-backend.sh 
+  args:
+    executable: /usr/bin/bash

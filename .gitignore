@@ -7,7 +7,4 @@
 *.tgz
 *.log
 *.log.*
-*.sig
 
-pkg/
-src/
